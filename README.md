@@ -97,32 +97,49 @@ Una vez iniciado el entorno:
 El procesamiento de una transferencia sigue de forma general este flujo:
 
 ```text
-Cliente
-   │
-   ▼
-Demo Web / API
-   │
-   ▼
-Servicio de Transacciones
-   │
-   ├── validación
-   ├── idempotencia
-   ├── operación financiera
-   ├── persistencia
-   └── Transactional Outbox
-          │
-          ▼
-     Worker Outbox
-          │
-          ▼
-       RabbitMQ
-          │
-          ├───────────────┐
-          ▼               ▼
-    Consumidor IA     Servicio Bancs
-          │
-          ▼
-     Servicio IA
+Cliente / Demo Web
+        │
+        │ HTTP REST
+        ▼
+┌─────────────────────────┐
+│ Servicio Transacciones  │
+│ FastAPI + Python        │
+└────────────┬────────────┘
+             │
+             │ Transacción ACID
+             ▼
+┌─────────────────────────┐
+│ PostgreSQL              │
+│                         │
+│ cuentas                 │
+│ transacciones           │
+│ movimientos             │
+│ eventos_outbox          │
+└────────────┬────────────┘
+             │
+             │ COMMIT
+             ├──────────────────────→ Respuesta al cliente
+             │
+             │ eventos pendientes
+             ▼
+┌─────────────────────────┐
+│ Worker Outbox           │
+└────────────┬────────────┘
+             │
+             ▼
+        ┌──────────┐
+        │ RabbitMQ │
+        └────┬─────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Consumidor IA           │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ Servicio IA             │
+└─────────────────────────┘
 ```
 
 La transferencia financiera se procesa de forma independiente de las tareas asíncronas. La IA y las integraciones posteriores no bloquean la respuesta principal al cliente.
