@@ -212,13 +212,17 @@ Estado validado durante el desarrollo:
 
 Las pruebas de carga utilizan k6.
 
-Antes de ejecutarlas se deben crear las cuentas destinadas al escenario de carga utilizando:
+Antes de ejecutar la prueba es necesario preparar las cuentas de prueba utilizadas por el dataset de carga.
+
+### 1. Crear las cuentas de prueba
+
+El proyecto incluye el script:
 
 ```text
-base_datos/seeds/cuentas_carga.sql
+base_datos/seeds/carga.sql
 ```
 
-El script genera 5.000 cuentas:
+Este script genera 5.000 cuentas con formato:
 
 ```text
 LOAD-000001
@@ -226,15 +230,48 @@ LOAD-000001
 LOAD-005000
 ```
 
-Es idempotente y puede ejecutarse varias veces sin duplicarlas.
+Para ejecutarlo desde PowerShell:
 
-Posteriormente puede ejecutarse, por ejemplo:
+```powershell
+Get-Content .\base_datos\seeds\carga.sql -Raw |
+docker exec -i smartbanks_database `
+  psql -U postgres -d smartbanks_db
+```
 
-```bash
-k6 run -e DATASET=LOAD -e RATE=500 -e DURATION=60s tests/carga/carga_transacciones.js
+> Si el usuario o el nombre de la base de datos son diferentes en tu entorno, reemplaza `postgres` y `smartbanks_db` por los valores configurados.
+
+El script puede ejecutarse varias veces porque utiliza:
+
+```sql
+ON CONFLICT (numero_cuenta) DO NOTHING;
+```
+
+por lo que no duplica las cuentas existentes.
+
+Opcionalmente, se puede verificar que las 5.000 cuentas fueron creadas con:
+
+```powershell
+docker exec -it smartbanks_database `
+  psql -U postgres -d smartbanks_db `
+  -c "SELECT COUNT(*) FROM cuentas WHERE numero_cuenta LIKE 'LOAD-%';"
+```
+
+El resultado esperado es:
+
+```text
+5000
+```
+
+### 2. Ejecutar la prueba con k6
+
+Una vez creadas las cuentas:
+
+```powershell
+k6 run -e DATASET=LOAD -e RATE=400 -e DURATION=60s tests/carga/carga_transacciones.js
 ```
 
 Los valores de `RATE` y `DURATION` pueden modificarse según el escenario que se quiera evaluar.
+
 
 ---
 
