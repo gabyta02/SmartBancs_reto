@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+
+  - job_name: "servicio_transacciones"
+
+    metrics_path: /metrics
+
+    static_configs:
+      - targets:
+          - "servicio_transacciones:8000"
+
+  - job_name: "worker_outbox"
+    static_configs:
+      - targets: ["worker_outbox:9101"]
+
+  - job_name: "consumidor_ia"
+    static_configs:
+      - targets: ["consumidor_ia:9102"]

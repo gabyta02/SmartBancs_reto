@@ -1,0 +1,10 @@
+-r servicio_transacciones/requirements.txt
+-r worker_outbox/requirements.txt
+-r servicio_ia/requirements.txt
+-r servicio_bancs/requirements.txt
+-r etl/requirements.txt
+-r demo_web/requirements.txt
+
+# Solo para tests
+pytest>=8
+python-dotenv>=1.0

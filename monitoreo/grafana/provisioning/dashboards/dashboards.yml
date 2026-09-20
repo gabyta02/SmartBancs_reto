@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+  - name: SmartBancs
+    orgId: 1
+    folder: SmartBancs
+    type: file
+    disableDeletion: false
+    editable: true
+
+    options:
+      path: /etc/grafana/provisioning/dashboards

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartBancs Demo</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <h1>SmartBancs</h1>
+    <nav>
+      <a href="#dashboard" data-vista="dashboard">Dashboard</a>
+      <a href="#transferencias" data-vista="transferencias">Transferencias</a>
+      <a href="#etl" data-vista="etl">ETL</a>
+      <a href="#observabilidad" data-vista="observabilidad">Observabilidad</a>
+    </nav>
+  </aside>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="vista-dashboard" class="vista">
+      <h2>Dashboard</h2>
+      <div class="grid" id="estado-servicios">
+        <div class="card estado" data-servicio="api_transacciones"><span class="punto"></span><h3>API Transacciones</h3><p>...</p></div>
+        <div class="card estado" data-servicio="postgresql"><span class="punto"></span><h3>PostgreSQL</h3><p>...</p></div>
+        <div class="card estado" data-servicio="worker_outbox"><span class="punto"></span><h3>Worker Outbox</h3><p>...</p></div>
+        <div class="card estado" data-servicio="rabbitmq"><span class="punto"></span><h3>RabbitMQ</h3><p>...</p></div>
+        <div class="card estado" data-servicio="consumidor_ia"><span class="punto"></span><h3>Consumidor IA</h3><p>...</p></div>
+        <div class="card estado" data-servicio="servicio_ia"><span class="punto"></span><h3>Servicio IA</h3><p>...</p></div>
+      </div>
+      <h3 class="sub">Accesos rápidos</h3>
+      <div class="acciones">
+        <a class="btn" href="#transferencias">Nueva transferencia</a>
+        <a class="btn" href="#etl">Ejecutar ETL</a>
+        <a class="btn secundario" data-enlace="grafana" target="_blank" rel="noopener">Abrir Grafana</a>
+        <a class="btn secundario" data-enlace="jaeger" target="_blank" rel="noopener">Abrir Jaeger</a>
+      </div>
+    </section>
+
+    <!-- TRANSFERENCIAS -->
+    <section id="vista-transferencias" class="vista">
+      <h2>Transferencias</h2>
+      <form id="form-transferencia" class="card">
+        <label>Cuenta origen
+          <input name="numero_cuenta_origen" list="lista-origen" required maxlength="30" autocomplete="off" placeholder="Buscar cuenta...">
+          <datalist id="lista-origen"></datalist>
+        </label>
+        <label>Cuenta destino
+          <input name="numero_cuenta_destino" list="lista-destino" required maxlength="30" autocomplete="off" placeholder="Buscar cuenta...">
+          <datalist id="lista-destino"></datalist>
+        </label>
+        <div class="fila">
+          <label>Monto
+            <input name="monto" type="number" step="0.01" min="0.01" required value="250.00">
+          </label>
+          <label>Divisa
+            <input name="divisa" maxlength="3" value="USD" required>
+          </label>
+        </div>
+        <button class="btn" type="submit" id="btn-transferir">Realizar transferencia</button>
+      </form>
+
+      <div id="resultado" class="card" hidden></div>
+
+      <div id="tarjeta-ia" class="card" hidden>
+        <h3>Análisis inteligente</h3>
+        <div id="contenido-ia"></div>
+      </div>
+
+      <div id="enlaces-transferencia" class="acciones" hidden>
+        <a class="btn secundario" id="btn-jaeger" target="_blank" rel="noopener">Ver traza en Jaeger</a>
+        <a class="btn secundario" data-enlace="grafana" target="_blank" rel="noopener">Ver dashboard</a>
+      </div>
+    </section>
+
+    <!-- ETL -->
+    <section id="vista-etl" class="vista">
+      <h2>ETL SmartBancs</h2>
+      <div class="pasos">
+        <div class="paso">Extracción</div><div class="flecha">↓</div>
+        <div class="paso">Transformación</div><div class="flecha">↓</div>
+        <div class="paso">Carga</div>
+      </div>
+      <div id="zona-archivo" class="zona-archivo" tabindex="0">
+        <p>Arrastra un archivo <strong>.csv</strong> o <strong>.xlsx</strong> aquí o</p>
+        <label class="btn secundario" for="archivo-etl">Seleccionar archivo</label>
+        <input type="file" id="archivo-etl" accept=".csv,.xlsx" hidden>
+        <p id="archivo-elegido" class="suave">Ningún archivo seleccionado</p>
+      </div>
+      <div class="nota">
+        <strong>Formato del archivo</strong>
+        <p>Puede ser un <b>.csv</b> o un Excel <b>.xlsx</b> (se lee la primera hoja) con una fila
+          de encabezados. Columnas obligatorias:</p>
+        <table>
+          <tr><th>Columna</th><th>Qué debe contener</th></tr>
+          <tr><td>id_transaccion</td><td>Identificador único (los repetidos se rechazan)</td></tr>
+          <tr><td>monto</td><td>Número no negativo, p. ej. 100.50 o 100,50</td></tr>
+          <tr><td>divisa</td><td>Código de moneda, p. ej. USD</td></tr>
+          <tr><td>fecha</td><td>Fecha válida, p. ej. 2026-09-19 o 19-09-2026</td></tr>
+          <tr><td>tipo</td><td>Tipo de operación, p. ej. TRANSFERENCIA</td></tr>
+        </table>
+        <p class="suave">Las filas con valores vacíos o inválidos no se cargan y se cuentan como rechazadas.</p>
+      </div>
+      <button class="btn" id="btn-etl" disabled>Ejecutar ETL</button>
+      <div id="resultado-etl" class="card" hidden></div>
+    </section>
+
+    <!-- OBSERVABILIDAD -->
+    <section id="vista-observabilidad" class="vista">
+      <h2>Observabilidad</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Grafana</h3>
+          <ul><li>Métricas</li><li>Throughput</li><li>Latencias</li><li>Errores</li></ul>
+          <a class="btn" data-enlace="grafana" target="_blank" rel="noopener">Abrir Grafana</a>
+        </div>
+        <div class="card">
+          <h3>Jaeger</h3>
+          <ul><li>Trazabilidad distribuida</li><li>Spans</li><li>Servicios</li></ul>
+          <a class="btn" data-enlace="jaeger" target="_blank" rel="noopener">Abrir Jaeger</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
