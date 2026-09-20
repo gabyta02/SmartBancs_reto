@@ -231,7 +231,7 @@ Es idempotente y puede ejecutarse varias veces sin duplicarlas.
 Posteriormente puede ejecutarse, por ejemplo:
 
 ```bash
-k6 run -e DATASET=LOAD -e RATE=400 -e DURATION=60s tests/carga/carga_transacciones.js
+k6 run -e DATASET=LOAD -e RATE=500 -e DURATION=60s tests/carga/carga_transacciones.js
 ```
 
 Los valores de `RATE` y `DURATION` pueden modificarse según el escenario que se quiera evaluar.
