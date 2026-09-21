@@ -11,6 +11,7 @@ Las principales herramientas empleadas fueron:
 - ChatGPT, incluyendo apoyo mediante Codex.
 - Claude, incluyendo Claude Code.
 - Gemini.
+- NotebookLM.
 
 ---
 
@@ -77,6 +78,23 @@ implementación.
 
 ---
 
+## NotebookLM
+
+NotebookLM se utilizó como apoyo para el desarrollo de la presentación del reto técnico.
+
+Su uso incluyó:
+
+- organización del contenido de la documentación del proyecto como fuente de la
+  presentación;
+- síntesis de los puntos principales de la arquitectura, decisiones técnicas y
+  resultados obtenidos;
+- apoyo en la estructuración del orden y la narrativa de la presentación.
+
+El contenido final de la presentación fue revisado por el desarrollador para asegurar
+que fuera consistente con la implementación y la documentación del proyecto.
+
+---
+
 ## Componentes y actividades en los que se utilizó IA
 
 Las herramientas de IA sirvieron como apoyo principalmente en:
@@ -90,7 +108,8 @@ Las herramientas de IA sirvieron como apoyo principalmente en:
 - diseño de la demostración funcional del MVP;
 - revisión de documentación técnica;
 - redacción y estructuración de archivos Markdown;
-- consultas conceptuales sobre sistemas bancarios y arquitectura transaccional.
+- consultas conceptuales sobre sistemas bancarios y arquitectura transaccional;
+- desarrollo de la presentación del reto técnico.
 
 ---
 
